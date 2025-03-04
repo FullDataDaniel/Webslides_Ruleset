@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Slideshow Template</title>
+    <style>
+        :root {
+            /* Primary color scheme - can be customized per presentation */
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --text-color: #333333;
+            --background-color: #ffffff;
+            
+            /* Typography */
+            --heading-font: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            --body-font: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--body-font);
+            color: var(--text-color);
+            background-color: var(--background-color);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--heading-font);
+            margin-bottom: var(--spacing-md);
+            color: var(--secondary-color);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        h2 {
+            font-size: 2rem;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+        }
+        
+        p {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        ul, ol {
+            margin: var(--spacing-md) 0;
+            padding-left: var(--spacing-lg);
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Slideshow container */
+        .slideshow-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Slides */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: var(--spacing-xl);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+        
+        /* Title slide */
+        .title-slide {
+            text-align: center;
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+        }
+        
+        .title-slide h1, 
+        .title-slide h2,
+        .title-slide h3 {
+            color: var(--light-color);
+        }
+        
+        /* Content containers */
+        .slide-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: var(--spacing-lg);
+        }
+        
+        .column {
+            flex: 1;
+        }
+        
+        /* Expandable content box */
+        .expandable-box {
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            margin-bottom: var(--spacing-md);
+            overflow: hidden;
+        }
+        
+        .expandable-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .expandable-content {
+            padding: var(--spacing-md);
+            display: none;
+        }
+        
+        .expandable-content.expanded {
+            display: block;
+        }
+        
+        /* Navigation controls */
+        .nav-controls {
+            position: absolute;
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .nav-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin: 0 var(--spacing-xs);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .slide-indicator {
+            margin: 0 var(--spacing-md);
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        
+        /* Print button */
+        .print-btn {
+            position: absolute;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            z-index: 10;
+            display: none;
+        }
+        
+        .print-btn.visible {
+            display: block;
+        }
+        
+        /* Progress indicator */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background-color: var(--primary-color);
+            width: 0;
+            transition: width 0.3s;
+            z-index: 10;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                overflow: visible;
+            }
+            
+            .slideshow-container {
+                height: auto;
+                overflow: visible;
+            }
+            
+            .slide {
+                position: relative;
+                opacity: 1;
+                page-break-after: always;
+                height: 100vh;
+                overflow: visible;
+            }
+            
+            .nav-controls, .print-btn, .progress-bar {
+                display: none;
+            }
+            
+            .expandable-content {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <!-- Title Slide -->
+        <div class="slide title-slide active" id="slide-1">
+            <div class="slide-content">
+                <h1>Presentation Title</h1>
+                <h2>Subtitle Here</h2>
+                <p>Presenter Name</p>
+                <p>Date</p>
+            </div>
+        </div>
+        
+        <!-- Introduction Slide -->
+        <div class="slide" id="slide-2">
+            <div class="slide-content">
+                <h2>Introduction</h2>
+                <p>This is where you introduce your topic. Share the purpose and goals of this presentation.</p>
+                <ul>
+                    <li>Key point 1</li>
+                    <li>Key point 2</li>
+                    <li>Key point 3</li>
+                </ul>
+                <p>This presentation will cover the most important aspects of the topic and provide actionable insights.</p>
+            </div>
+        </div>
+        
+        <!-- Content Slide with Two Columns -->
+        <div class="slide" id="slide-3">
+            <div class="slide-content">
+                <h2>Main Content - Two Column Layout</h2>
+                <div class="two-column">
+                    <div class="column">
+                        <h3>Left Column</h3>
+                        <p>This column can contain text, lists, or other content.</p>
+                        <ul>
+                            <li>Point 1</li>
+                            <li>Point 2</li>
+                            <li>Point 3</li>
+                        </ul>
+                    </div>
+                    <div class="column">
+                        <h3>Right Column</h3>
+                        <p>This column could contain an image, chart, or additional content.</p>
+                        <img src="/api/placeholder/400/320" alt="placeholder">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Slide with Expandable Sections -->
+        <div class="slide" id="slide-4">
+            <div class="slide-content">
+                <h2>Detailed Content with Expandables</h2>
+                <p>This slide demonstrates how to handle more detailed content with expandable sections.</p>
+                
+                <div class="expandable-box">
+                    <div class="expandable-header">
+                        <h3>Section 1</h3>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="expandable-content">
+                        <p>This is detailed content for Section 1. You can include lots of information here without overwhelming the slide.</p>
+                        <ul>
+                            <li>Detailed point 1</li>
+                            <li>Detailed point 2</li>
+                            <li>Detailed point 3</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="expandable-box">
+                    <div class="expandable-header">
+                        <h3>Section 2</h3>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="expandable-content">
+                        <p>This is detailed content for Section 2. You can include lots of information here without overwhelming the slide.</p>
+                        <ul>
+                            <li>Detailed point 1</li>
+                            <li>Detailed point 2</li>
+                            <li>Detailed point 3</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Another Standard Content Slide -->
+        <div class="slide" id="slide-5">
+            <div class="slide-content">
+                <h2>Additional Content</h2>
+                <p>This is another standard content slide. You can include images, text, or other elements.</p>
+                <img src="/api/placeholder/800/400" alt="placeholder">
+                <p>Caption or description of the image above.</p>
+            </div>
+        </div>
+        
+        <!-- Summary Slide -->
+        <div class="slide" id="slide-6">
+            <div class="slide-content">
+                <h2>Summary</h2>
+                <p>Recap the main points of your presentation:</p>
+                <ul>
+                    <li>Key takeaway 1</li>
+                    <li>Key takeaway 2</li>
+                    <li>Key takeaway 3</li>
+                </ul>
+                <h3>Next Steps</h3>
+                <p>Information about what the audience should do with this knowledge.</p>
+                <h3>Questions?</h3>
+                <p>Contact information or invitation for questions.</p>
+                
+                <!-- Print button only shown on the last slide -->
+                <button class="print-btn visible" onclick="printSlides()">Print Slides</button>
+            </div>
+        </div>
+        
+        <!-- Navigation Controls -->
+        <div class="nav-controls">
+            <button class="nav-btn prev-btn" onclick="changeSlide(-1)">Previous</button>
+            <span class="slide-indicator">1/6</span>
+            <button class="nav-btn next-btn" onclick="changeSlide(1)">Next</button>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar"></div>
+    </div>
+    
+    <script>
+        // Current slide index
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+        
+        // Update slide indicator and progress bar
+        function updateIndicators() {
+            // Update slide indicator text
+            document.querySelector('.slide-indicator').textContent = `${currentSlide}/${totalSlides}`;
+            
+            // Update progress bar
+            const progressPercentage = (currentSlide / totalSlides) * 100;
+            document.querySelector('.progress-bar').style.width = `${progressPercentage}%`;
+            
+            // Show print button only on the last slide
+            const printBtn = document.querySelector('.print-btn');
+            if (currentSlide === totalSlides) {
+                printBtn.classList.add('visible');
+            } else {
+                printBtn.classList.remove('visible');
+            }
+        }
+        
+        // Change slide function
+        function changeSlide(direction) {
+            // Hide current slide
+            document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+            
+            // Calculate new slide index
+            currentSlide += direction;
+            
+            // Loop around if needed
+            if (currentSlide > totalSlides) {
+                currentSlide = 1;
+            } else if (currentSlide < 1) {
+                currentSlide = totalSlides;
+            }
+            
+            // Show new slide
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+            
+            // Update indicators
+            updateIndicators();
+        }
+        
+        // Handle keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                changeSlide(1);
+            } else if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+        
+        // Expandable content functionality
+        const expandableHeaders = document.querySelectorAll('.expandable-header');
+        expandableHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('.expand-icon');
+                
+                if (content.classList.contains('expanded')) {
+                    content.classList.remove('expanded');
+                    icon.textContent = '+';
+                } else {
+                    content.classList.add('expanded');
+                    icon.textContent = '-';
+                }
+            });
+        });
+        
+        // Print functionality
+        function printSlides() {
+            // Make all slides visible for printing
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.classList.add('print-visible');
+            });
+            
+            // Open print dialog
+            window.print();
+            
+            // Restore visibility
+            slides.forEach(slide => {
+                slide.classList.remove('print-visible');
+            });
+            
+            // Keep the current slide active
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+        }
+        
+        // Initialize indicators on load
+        updateIndicators();
+    </script>
+</body>
+</html>
