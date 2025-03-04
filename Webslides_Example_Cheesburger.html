@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Epic History of Cheeseburgers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f7f7f7;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+        
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .slide-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #D62300;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .slide-subtitle {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .slide-text {
+            font-size: 1.5rem;
+            line-height: 1.5;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+        
+        .slide-image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            max-height: 50vh;
+        }
+        
+        .slide-image {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .nav-button {
+            background-color: #D62300;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 0 5px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .nav-button:hover {
+            background-color: #B31E00;
+        }
+        
+        .nav-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .slide-indicator {
+            margin: 0 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .print-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+            display: none;
+        }
+        
+        .print-button:hover {
+            background-color: #222;
+        }
+        
+        /* Specific slide styles */
+        
+        .timeline {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .timeline-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .timeline-item:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #D62300;
+            transform: translateY(-50%);
+            z-index: -1;
+        }
+        
+        .timeline-year {
+            background-color: #D62300;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .timeline-text {
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        
+        .fact-box {
+            background-color: #FFFAEE;
+            border-left: 5px solid #FFB100;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .fact-title {
+            font-weight: 700;
+            color: #D62300;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .two-columns {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .column {
+            flex: 1;
+        }
+        
+        /* Specific background for the intro slide */
+        .intro-slide {
+            background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), 
+                        url('/api/placeholder/1200/800') center/cover no-repeat;
+        }
+        
+        /* Media queries */
+        @media (max-width: 768px) {
+            .slide-title {
+                font-size: 2.2rem;
+            }
+            
+            .slide-subtitle {
+                font-size: 1.5rem;
+            }
+            
+            .slide-text {
+                font-size: 1.2rem;
+            }
+            
+            .two-columns {
+                flex-direction: column;
+            }
+            
+            .timeline {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .timeline-item:not(:last-child):after {
+                width: 3px;
+                height: 100%;
+                top: 50%;
+                right: 50%;
+            }
+        }
+        
+        @media print {
+            .slide {
+                opacity: 1;
+                page-break-after: always;
+                position: relative;
+                height: 100vh;
+            }
+            
+            .navigation, .print-button {
+                display: none;
+            }
+            
+            body {
+                overflow: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Slide 1: Introduction -->
+        <div class="slide intro-slide active">
+            <div class="slide-header">
+                <h1 class="slide-title">THE EPIC HISTORY OF CHEESEBURGERS</h1>
+            </div>
+            <div class="slide-content">
+                <h2 class="slide-subtitle">America's Most Iconic Food... With Cheese On Top</h2>
+                <p class="slide-text">From humble beginnings to global domination, the story of how meat, cheese, and bread became the ultimate bromance.</p>
+                <div class="slide-image-container">
+                    <img src="/api/placeholder/800/500" alt="Juicy cheeseburger" class="slide-image">
+                </div>
+                <p class="slide-text">A culinary journey through time, legends, and enough calories to power a small nation.</p>
+            </div>
+        </div>
+        
+        <!-- Slide 2: Origins -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">THE BIRTH OF A LEGEND</h1>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="column">
+                        <h2 class="slide-subtitle">Multiple Origin Claims</h2>
+                        <p class="slide-text">Like any great story, the cheeseburger's exact birthplace is hotly contested:</p>
+                        <div class="fact-box">
+                            <h3 class="fact-title">Lionel Sternberger (1926)</h3>
+                            <p>16-year-old Lionel reportedly experimented at his father's sandwich shop "The Rite Spot" in Pasadena, CA, adding cheese to a hamburger.</p>
+                        </div>
+                        <div class="fact-box">
+                            <h3 class="fact-title">Charles Kaelin (1934)</h3>
+                            <p>Claimed to have added a slice of American cheese to a patty at his Kaelin's restaurant in Louisville, Kentucky.</p>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="slide-image-container">
+                            <img src="/api/placeholder/400/600" alt="Vintage diner from the 1920s" class="slide-image">
+                        </div>
+                        <div class="fact-box">
+                            <h3 class="fact-title">O'Dell's (1935)</h3>
+                            <p>A Los Angeles restaurant that tried to trademark the term "cheeseburger" but was denied due to it being considered too generic.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 3: Evolution Timeline -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">EVOLUTION OF THE CHEESEBURGER</h1>
+            </div>
+            <div class="slide-content">
+                <h2 class="slide-subtitle">From Simple to Sublime</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-year">1940s</div>
+                        <p class="timeline-text">Basic burger + American cheese slice</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1950s</div>
+                        <p class="timeline-text">Drive-in culture explodes, cheeseburgers become iconic</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1960s</div>
+                        <p class="timeline-text">Fast food chains standardize the cheeseburger</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1980s</div>
+                        <p class="timeline-text">Gourmet burgers emerge with exotic cheeses</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2000s</div>
+                        <p class="timeline-text">Craft burger movement begins</p>
+                    </div>
+                </div>
+                <div class="slide-image-container">
+                    <img src="/api/placeholder/900/400" alt="Evolution of cheeseburgers through decades" class="slide-image">
+                </div>
+                <p class="slide-text">As American culture evolved, so did the cheeseburger—from simple diner food to a canvas for culinary innovation.</p>
+            </div>
+        </div>
+        
+        <!-- Slide 4: Fast Food Revolution -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">THE FAST FOOD TAKEOVER</h1>
+            </div>
+            <div class="slide-content">
+                <h2 class="slide-subtitle">How McDonald's Changed Everything</h2>
+                <div class="two-columns">
+                    <div class="column">
+                        <p class="slide-text">In 1940, McDonald's opened its doors, but it wasn't until 1948 that they revolutionized how food was prepared with their "Speedee Service System."</p>
+                        <div class="fact-box">
+                            <h3 class="fact-title">First McDonald's Cheeseburger: 1950s</h3>
+                            <p>Price: 19 cents (about $2.15 in today's money)</p>
+                        </div>
+                        <p class="slide-text">By 1955, Ray Kroc had bought the rights to franchise McDonald's, turning it into the global empire we know today.</p>
+                    </div>
+                    <div class="column">
+                        <div class="slide-image-container">
+                            <img src="/api/placeholder/500/350" alt="Vintage McDonald's" class="slide-image">
+                        </div>
+                        <div class="fact-box">
+                            <h3 class="fact-title">The Big Mac (1968)</h3>
+                            <p>Created by Jim Delligatti in Pittsburgh, PA, the Big Mac became the icon of fast food cheeseburgers worldwide.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="slide-text">Fast food chains didn't just sell burgers—they exported American culture globally, making the cheeseburger an international icon.</p>
+            </div>
+        </div>
+        
+        <!-- Slide 5: Famous Burgers -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">LEGENDARY CHEESEBURGERS</h1>
+            </div>
+            <div class="slide-content">
+                <h2 class="slide-subtitle">The Hall of Fame</h2>
+                <div class="two-columns">
+                    <div class="column">
+                        <div class="fact-box">
+                            <h3 class="fact-title">The In-N-Out Double-Double</h3>
+                            <p>Two patties, two cheese slices, fresh ingredients, and a not-so-secret sauce. Developed in 1963, it's become a cult favorite.</p>
+                        </div>
+                        <div class="fact-box">
+                            <h3 class="fact-title">Shake Shack's ShackBurger</h3>
+                            <p>Started as a hot dog cart in Madison Square Park in 2001, the ShackBurger blends Angus beef with American cheese and ShackSauce.</p>
+                        </div>
+                        <div class="fact-box">
+                            <h3 class="fact-title">The Juicy Lucy</h3>
+                            <p>Pioneered in Minneapolis, this burger has the cheese INSIDE the patty, creating a molten core that can cause serious mouth burns (worth it).</p>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="slide-image-container">
+                            <img src="/api/placeholder/500/600" alt="Famous cheeseburgers" class="slide-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 6: Record Breakers -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">PUSHING THE LIMITS</h1>
+            </div>
+            <div class="slide-content">
+                <h2 class="slide-subtitle">Record-Breaking Burgers</h2>
+                <div class="two-columns">
+                    <div class="column">
+                        <div class="fact-box">
+                            <h3 class="fact-title">Most Expensive</h3>
+                            <p>The Fleurburger 5000 ($5,000) - Created by Hubert Keller at Fleur in Las Vegas, served with a bottle of 1995 Château Pétrus.</p>
+                        </div>
+                        <div class="fact-box">
+                            <h3 class="fact-title">Largest Commercial Burger</h3>
+                            <p>Mallie's Sports Grill in Michigan created a 1,794 pound burger in 2017, which sold for about $8,000.</p>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="slide-image-container">
+                            <img src="/api/placeholder/500/400" alt="Massive burger" class="slide-image">
+                        </div>
+                        <div class="fact-box">
+                            <h3 class="fact-title">Tallest Burger</h3>
+                            <p>A 2.3 meter (7.5 foot) tall cheeseburger was created in Oregon in 2009, containing 45 kilograms of beef.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="slide-text">Americans have never been satisfied with "enough" - we always push for bigger, better, and cheesier.</p>
+            </div>
+        </div>
+        
+        <!-- Slide 7: Modern Era -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">THE MODERN CHEESEBURGER</h1>
+            </div>
+            <div class="slide-content">
+                <h2 class="slide-subtitle">From Fast Food to Fine Dining</h2>
+                <div class="two-columns">
+                    <div class="column">
+                        <p class="slide-text">Today's cheeseburger landscape has fractured into multiple categories:</p>
+                        <div class="fact-box">
+                            <h3 class="fact-title">The Craft Burger Movement</h3>
+                            <p>Artisanal ingredients, locally-sourced beef, and house-made buns have elevated the humble cheeseburger to gourmet status.</p>
+                        </div>
+                        <div class="fact-box">
+                            <h3 class="fact-title">The Alternative Revolution</h3>
+                            <p>Plant-based options like Impossible and Beyond burgers are changing the game for vegetarians and the environmentally conscious.</p>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="slide-image-container">
+                            <img src="/api/placeholder/500/400" alt="Gourmet burger" class="slide-image">
+                        </div>
+                        <div class="fact-box">
+                            <h3 class="fact-title">Social Media Stars</h3>
+                            <p>Instagram and TikTok have created a new genre of "camera-ready" burgers designed more for likes than for eating (though they're delicious too).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 8: Conclusion/Summary -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">THE LEGACY CONTINUES</h1>
+            </div>
+            <div class="slide-content">
+                <h2 class="slide-subtitle">Why We'll Never Stop Loving Cheeseburgers</h2>
+                <p class="slide-text">The cheeseburger journey continues to evolve, but some things remain constant:</p>
+                <div class="fact-box">
+                    <h3 class="fact-title">Cultural Icon</h3>
+                    <p>From Jimmy Buffett's "Cheeseburger in Paradise" to the double Krabby Patty with cheese, the cheeseburger is embedded in our cultural DNA.</p>
+                </div>
+                <div class="fact-box">
+                    <h3 class="fact-title">Universal Appeal</h3>
+                    <p>Few foods cross socioeconomic boundaries like the cheeseburger—from $1 fast food options to $100+ luxury versions.</p>
+                </div>
+                <div class="fact-box">
+                    <h3 class="fact-title">Constant Innovation</h3>
+                    <p>While respecting tradition, chefs continue to reinvent the form with new cheeses, toppings, and techniques.</p>
+                </div>
+                <div class="slide-image-container">
+                    <img src="/api/placeholder/800/400" alt="Modern gourmet cheeseburger" class="slide-image">
+                </div>
+                <p class="slide-text">The perfect balance of familiarity and possibility—that's the enduring legacy of the cheeseburger.</p>
+            </div>
+            <button class="print-button" onclick="window.print()">Print Slides</button>
+        </div>
+        
+        <!-- Navigation controls -->
+        <div class="navigation">
+            <button class="nav-button prev-button" onclick="prevSlide()">Previous</button>
+            <div class="slide-indicator">Slide 1 of 8</div>
+            <button class="nav-button next-button" onclick="nextSlide()">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const prevButton = document.querySelector('.prev-button');
+        const nextButton = document.querySelector('.next-button');
+        const slideIndicator = document.querySelector('.slide-indicator');
+        const printButton = document.querySelector('.print-button');
+        
+        // Initialize slide controls
+        updateSlideControls();
+        
+        function goToSlide(slideIndex) {
+            // Remove active class from current slide
+            slides[currentSlide].classList.remove('active');
+            
+            // Update current slide
+            currentSlide = slideIndex;
+            
+            // Add active class to new current slide
+            slides[currentSlide].classList.add('active');
+            
+            // Update controls
+            updateSlideControls();
+        }
+        
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+        
+        function updateSlideControls() {
+            // Update slide indicator
+            slideIndicator.textContent = `Slide ${currentSlide + 1} of ${totalSlides}`;
+            
+            // Update button states
+            prevButton.disabled = currentSlide === 0;
+            nextButton.disabled = currentSlide === totalSlides - 1;
+            
+            // Show print button only on the last slide
+            if (currentSlide === totalSlides - 1) {
+                printButton.style.display = 'block';
+            } else {
+                printButton.style.display = 'none';
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>
