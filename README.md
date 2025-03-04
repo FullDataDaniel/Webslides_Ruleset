@@ -4,6 +4,10 @@
 
 A professional, customizable HTML-based slideshow template system that allows you to create beautiful web presentations on any topic with minimal effort.
 
+Use this Ruleset in a AI-Space, -Project, -GTP, ... to generate specific promtings over and over again.
+
+With this ruleset you can create basic designs with just one lined prompts: "Cheesburger [Male Friends, 18y+]"
+
   
 
 ## AI Promting Ruleset
